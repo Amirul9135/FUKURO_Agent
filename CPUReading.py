@@ -29,23 +29,19 @@ class CPUReading:
         self._usageOnSys = round(self._usageOnSys * 100, 2)
         self._usageOnInterrupt = round(self._usageOnInterrupt * 100,2)
         
-        #assign the cpu name
-        self._cpuName = reading2.split()[0]
-        
         
         
     
     @staticmethod
     def getCurrent():
-        strCPULines = []
-        curTime = datetime.now()
+       # strCPULines = [] 
         
         #open and read /proc/stat return line that concerns cpu only
         with open('/proc/stat', 'r') as stat_file:
             for line in stat_file:
-                if line.startswith('cpu'):
-                    strCPULines.append(line)
-        return strCPULines, curTime
+                if line.startswith('cpu') and not line[3].isdigit(): #exclude that have digit to only extract total of all core 
+                    return line,datetime.now() 
+        return 
      
     def getUsageOnUserProcess(self):
         return self._usageOnUser
@@ -59,14 +55,10 @@ class CPUReading:
     def getReadingTime(self):
         return self._timeStamp
     
-    def getCpuName(self):
-        return self._cpuName
-    
     def getJSON(self):
         #convert to json format complies with database entity
         return {
-            "dateTime": self._timeStamp, 
-            "label": self._cpuName,
+            "dateTime": self._timeStamp,  
             "system": self._usageOnSys,
             "user": self._usageOnUser,
             "interrupt": self._usageOnInterrupt 

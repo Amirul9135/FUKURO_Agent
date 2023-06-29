@@ -2,7 +2,7 @@ import websocket
 import threading
  
 class WsClient:
-    def __init__(self,url,verifyJSON,restartThread,setInterval):
+    def __init__(self,url,verifyJSON,restartThread,intervalController,rtController):
         self.ws = websocket.WebSocketApp(url,
                                          on_open=self._onOpen,
                                       on_message=self._onMessage,
@@ -10,20 +10,24 @@ class WsClient:
                                       on_close=self._onClose)
         self.verifyJSON = verifyJSON  
         self.restartThread = restartThread
-        self.setInterval = setInterval
+        self.intervalController = intervalController
+        self.realtimeController = rtController
     
     def _onOpen(self,ws):
         print("open") 
         self.ws.send(self.verifyJSON) 
     
     def _onMessage(self,ws,message):
-        print(message) 
-        if message == "live interval": 
-                self.setInterval(3,3)
-                self.restartThread(self)
-        elif message == "norm interval": 
-                self.setInterval(60,10)
-                self.restartThread(self)
+        print(f"recieved{message}")  
+        if message == "RT_CPU":
+            self.realtimeController(self,{
+                "cpu":"start"
+            })
+        elif message == "NOCLIENT":
+            self.realtimeController(self,{
+                "cpu":"stop"
+            })
+            
                 
     
     def _onError(self,ws,error):

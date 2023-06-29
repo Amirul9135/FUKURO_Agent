@@ -12,17 +12,37 @@ import re
 # Clear console command based on the operating system
 clear_console_command = "cls" if os.name == "nt" else "clear"
 
+ 
 cpuReadings = []
 fukuroIp = "http://192.168.30.1:5000/" 
-global_pushInterval = 60
-global_ExtractInterval = 10
+
+#intervals
+global_pushInterval = 60 
+global_ExtractInterval = 5 #configurable
+
+#Threads
 pushThread = None
-extractThread = None
+extractCPUThread = None
+
+#Push and Extract Flag
 doPush = True
 doExtract = True
 
+##### Realtime settings
+
+#Realtime threads
+RTCpuThread = None
+
+#Realtime intervals
+RTCpuInterval = 1
+
+#Realtime flags
+RTCpu = False
+
 
 def main():
+    #skip()
+    #return
     clear_console()
     print("  ________  __    __  __   __  __    __  ______    _____\n"
           +" |   _____||  |  |  ||  | /  /|  |  |  ||   __  \\ /  _  \\\n" 
@@ -103,57 +123,86 @@ def main():
             print("invalid input")
             time.sleep(.5)
             
+     
     
- 
 
 def monitoring(jsonVerifyWS): 
     #ws er
     print(jsonVerifyWS) 
-    wsc = WsClient("ws://192.168.30.1:5000",jsonVerifyWS,restartPushThread,setInterval)
+    wsc = WsClient("ws://192.168.30.1:5000",jsonVerifyWS,restartPushThread,intervalController,realTimeController)
     wsc.run() 
     print("after")
-    global pushThread, extractThread
-    extractThread = threading.Thread(target=extractMetric)
+    global pushThread, extractCPUThread
+    extractCPUThread = threading.Thread(target=extractCPU)
     pushThread = threading.Thread(target=pushMetrics, args=(wsc,))
     pushThread.start()  
-    extractThread.start()
+    extractCPUThread.start()
 
-def extractMetric():
-    print("extract")
-    global doExtract, global_ExtractInterval
+def extractCPU():
+    
+    print("extract cpu")
+    global doExtract, global_ExtractInterval,cpuReadings
     while doExtract: 
         
-        #get first reading ignore time
+        # get first reading ignore time
         reading1,_ = CPUReading.getCurrent() 
 
-        with lock:
-            extInterval = global_ExtractInterval
-        while doExtract and extInterval > 0:
-            time.sleep(1)
-            extInterval -= 1
+        time.sleep(1)
         
-        #get second reading and timestamp
+        # get second reading and timestamp
         reading2,readTime = CPUReading.getCurrent() 
         
-        global cpuReadings
-        #parse reading into each cpu
-        for i in range(len(reading1)): 
-            tmpRead = CPUReading(reading1[i],reading2[i],readTime) 
-            with lock:
-                cpuReadings.append(tmpRead.getJSON()) 
+        # append cpu reading into the cache 
+        with lock:
+            cpuReadings.append(CPUReading(reading1,reading2,readTime).getJSON())  
+            extInterval = global_ExtractInterval
+            
+        # cooldown according to extract interval
+        # wait by 1 second to allow instant reset when necessary
+        while doExtract and extInterval - 1 > 0:
+            time.sleep(1)
+            extInterval -= 1
+
+def extractCPURealtime(wsc): 
+    global RTCpu,RTCpuInterval
+    while RTCpu: 
+        # get first reading ignore time
+        reading1,_ = CPUReading.getCurrent() 
+
+        time.sleep(1)
+        
+        # get second reading and timestamp
+        reading2,readTime = CPUReading.getCurrent() 
+        payload = {
+            "realtime":{
+                "cpu": CPUReading(reading1,reading2,readTime).getJSON()
+            }
+        } 
+        payload = json.dumps(payload)
+        payload = payload.replace('_',' ')
+        wsc.send(payload)
+        print("send cpu realtime")
+        with lock:
+            tmpInterval = RTCpuInterval
+        while RTCpu and tmpInterval - 1 > 0:
+            time.sleep(1)
+            tmpInterval -= 1
+        
             
 def pushMetrics(wsc):
-    print("push metric") 
+    print("saving metric") 
     global global_pushInterval, doPush
     while doPush: 
         with lock:
             pushInterval = global_pushInterval
-        print(f"pushInterval{pushInterval}") 
+        
+        # cooldown push metrics,
+        # wait by 1 second to allow instant shift in interval
         while doPush and pushInterval > 0:
             time.sleep(1) 
             pushInterval -= 1
+            
         global cpuReadings 
-        
         payload = { 
             "readings":{
                 "cpu":[]
@@ -163,8 +212,7 @@ def pushMetrics(wsc):
         #access global var of readings
         with lock:
             payload["readings"]["cpu"] = cpuReadings.copy()
-            cpuReadings.clear()
-        
+            cpuReadings.clear() 
         #minify payload
         payload = re.sub(r"\s+|\n","",json.dumps(payload))
         payload = payload.replace('_',' ')
@@ -173,27 +221,51 @@ def pushMetrics(wsc):
         wsc.send(payload)
         print("submited")
             
-        
-
 def restartPushThread(wsc): 
-    global pushThread, doPush , doExtract, extractThread
+    global pushThread, doPush , doExtract, extractCPUThread
     doPush = False
     doExtract = False
     pushThread.join()
-    extractThread.join()
+    extractCPUThread.join()
     pushThread = threading.Thread(target=pushMetrics, args=(wsc,))
-    extractThread = threading.Thread(target=extractMetric)
+    extractCPUThread = threading.Thread(target=extractCPU)
     doPush = True
     doExtract = True
     pushThread.start() 
-    extractThread.start()
+    extractCPUThread.start()
     
-def setInterval(iv,iv2):
-    global global_pushInterval, global_ExtractInterval
-    with lock:
-        global_pushInterval = iv
-        global_ExtractInterval = iv2
-    
+# function to modify intervals for historical reaing
+def intervalController(config):
+    if "push" in config:
+        global global_pushInterval
+        with lock:
+            global_pushInterval = config["push"]
+    elif "extract" in config:
+        global global_ExtractInterval
+        with lock:
+            global_ExtractInterval = config["extract"] 
+
+ 
+
+# controller function for realtime metrics extraction
+# param config as hash
+# {
+#  "cpu":  
+# }
+def realTimeController(wsc,config):
+    if "cpu" in config:
+        # cpu configuration
+        global RTCpuThread, RTCpu
+        if config["cpu"] == "start":
+            print("Starting realtime cpu extraction")
+            RTCpuThread = threading.Thread(target=extractCPURealtime, args=(wsc,))
+            RTCpu = True
+            RTCpuThread.start()  
+        elif config["cpu"] == "stop":
+            print("Stopping realtime cpu extraction")
+            RTCpu = False
+            RTCpuThread.join()
+            
 
 def clear_console():
     os.system(clear_console_command)

@@ -39,6 +39,12 @@ RTCpuInterval = 1
 #Realtime flags
 RTCpu = False
 
+# signals
+CPUAlertCooldown = 60 #second #configurable
+isCPUAlertCooldown = False
+CPUAlertThreshold = 50 #configurable
+
+
 
 def main():
     #skip()
@@ -133,15 +139,15 @@ def monitoring(jsonVerifyWS):
     wsc.run() 
     print("after")
     global pushThread, extractCPUThread
-    extractCPUThread = threading.Thread(target=extractCPU)
+    extractCPUThread = threading.Thread(target=extractCPU, args=(wsc,))
     pushThread = threading.Thread(target=pushMetrics, args=(wsc,))
     pushThread.start()  
     extractCPUThread.start()
 
-def extractCPU():
+def extractCPU(wsc):
     
     print("extract cpu")
-    global doExtract, global_ExtractInterval,cpuReadings
+    global doExtract, global_ExtractInterval,cpuReadings, isCPUAlertCooldown
     while doExtract: 
         
         # get first reading ignore time
@@ -153,9 +159,27 @@ def extractCPU():
         reading2,readTime = CPUReading.getCurrent() 
         
         # append cpu reading into the cache 
+        cpuMetric = CPUReading(reading1,reading2,readTime)
         with lock:
-            cpuReadings.append(CPUReading(reading1,reading2,readTime).getJSON())  
+            cpuReadings.append(cpuMetric.getJSON())  
             extInterval = global_ExtractInterval
+        print(f"reading {cpuMetric.getTotal()}")
+        if cpuMetric.getTotal() >= CPUAlertThreshold:
+            print('th')
+            if not isCPUAlertCooldown:
+                payload = {
+                    "alert":{
+                        "type":"cpu",
+                        "reading": cpuMetric.getJSON()
+                    }
+                }
+                payload = json.dumps(payload)
+                payload = payload.replace('_',' ')
+                wsc.send(payload)
+                print("alerts")
+                isCPUAlertCooldown = True
+                threading.Thread(target=cooldownCPU).start()
+        
             
         # cooldown according to extract interval
         # wait by 1 second to allow instant reset when necessary
@@ -228,7 +252,7 @@ def restartPushThread(wsc):
     pushThread.join()
     extractCPUThread.join()
     pushThread = threading.Thread(target=pushMetrics, args=(wsc,))
-    extractCPUThread = threading.Thread(target=extractCPU)
+    extractCPUThread = threading.Thread(target=extractCPU, args=(wsc,))
     doPush = True
     doExtract = True
     pushThread.start() 
@@ -246,6 +270,17 @@ def intervalController(config):
             global_ExtractInterval = config["extract"] 
 
  
+def cooldownCPU():
+    cooldown = 0
+    global isCPUAlertCooldown,CPUAlertCooldown
+    while isCPUAlertCooldown and cooldown < CPUAlertCooldown:
+        cooldown = cooldown + 1
+        time.sleep(1)
+    with lock:
+        isCPUAlertCooldown = False
+        
+        
+
 
 # controller function for realtime metrics extraction
 # param config as hash

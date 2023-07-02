@@ -2,6 +2,7 @@ import websocket
 import threading
  
 class WsClient:
+    
     def __init__(self,url,verifyJSON,restartThread,intervalController,rtController):
         self.ws = websocket.WebSocketApp(url,
                                          on_open=self._onOpen,

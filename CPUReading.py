@@ -28,6 +28,7 @@ class CPUReading:
         self._usageOnUser = round(self._usageOnUser * 100, 2)
         self._usageOnSys = round(self._usageOnSys * 100, 2)
         self._usageOnInterrupt = round(self._usageOnInterrupt * 100,2)
+        self._total = self._usageOnUser + self._usageOnSys + self._usageOnInterrupt
         
         
         
@@ -63,5 +64,8 @@ class CPUReading:
             "user": self._usageOnUser,
             "interrupt": self._usageOnInterrupt 
         }
+        
+    def getTotal(self):
+        return self._total
         
     

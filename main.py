@@ -18,7 +18,7 @@ fukuroIp = "http://192.168.30.1:5000/"
 
 #intervals
 global_pushInterval = 60 
-global_ExtractInterval = 5 #configurable
+global_ExtractInterval = 15 #configurable
 
 #Threads
 pushThread = None
@@ -42,7 +42,7 @@ RTCpu = False
 # signals
 CPUAlertCooldown = 60 #second #configurable
 isCPUAlertCooldown = False
-CPUAlertThreshold = 50 #configurable
+CPUAlertThreshold = 80 #configurable
 
 
 

@@ -1,9 +1,10 @@
 from datetime import datetime 
+import json
 
 class CPUReading:
     def __init__(self,reading1,reading2,timeStamp): 
         
-        self._timeStamp = timeStamp.strftime("%Y-%m-%d_%H:%M:%S")
+        self.__timeStamp = timeStamp.strftime("%Y-%m-%d_%H:%M:%S")
         
         #split the reading line into fields skip 1st field since its a name
         #by index field will contain
@@ -20,49 +21,48 @@ class CPUReading:
                                                        + r1[2] + r1[3] + r1[4] + r1[5] + r1[6] ) 
         
         #calculate the usage %        
-        self._usageOnUser = ((r2[0] + r2[1]) - (r1[0]+r1[1])) / totalTimeDiff
-        self._usageOnSys = (r2[2] - r1[2]) / totalTimeDiff
-        self._usageOnInterrupt = ((r2[5] + r2[6]) - (r1[5] + r1[6])) / totalTimeDiff
+        self.__usageOnUser = ((r2[0] + r2[1]) - (r1[0]+r1[1])) / totalTimeDiff
+        self.__usageOnSys = (r2[2] - r1[2]) / totalTimeDiff
+        self.__usageOnInterrupt = ((r2[5] + r2[6]) - (r1[5] + r1[6])) / totalTimeDiff
          
-        self._usageOnUser = round(self._usageOnUser * 100, 2)
-        self._usageOnSys = round(self._usageOnSys * 100, 2)
-        self._usageOnInterrupt = round(self._usageOnInterrupt * 100,2)
-        self._total = self._usageOnUser + self._usageOnSys + self._usageOnInterrupt
+        self.__usageOnUser = round(self.__usageOnUser * 100, 2)
+        self.__usageOnSys = round(self.__usageOnSys * 100, 2)
+        self.__usageOnInterrupt = round(self.__usageOnInterrupt * 100,2)
+        self.__total = self.__usageOnUser + self.__usageOnSys + self.__usageOnInterrupt 
         
-        
+    def toJSON(self):
+        #convert to json format complies with database entity
+        return {
+            "dateTime": self.__timeStamp,  
+            "system": self.__usageOnSys,
+            "user": self.__usageOnUser,
+            "interrupt": self.__usageOnInterrupt 
+        } 
         
     
     @staticmethod
-    def getCurrent(): 
+    def readCurrentProc(): 
         with open('/proc/stat', 'r') as stat_file:
+            timestamp = datetime.now()
             for line in stat_file:
                 if line.startswith('cpu') and not line[3].isdigit(): #exclude that have digit to only extract total of all core 
-                    return line,datetime.now() 
+                    return line,timestamp
         return 
+ 
      
     def getUsageOnUserProcess(self):
-        return self._usageOnUser
+        return self.__usageOnUser
      
     def getUsageOnSystemProcess(self):
-        return self._usageOnSys
+        return self.__usageOnSys
      
     def getUsageOnInterrupt(self):
-        return self._usageOnInterrupt
+        return self.__usageOnInterrupt
     
     def getReadingTime(self):
-        return self._timeStamp
+        return self.__timeStamp
     
     def getTotal(self):
-        return self._total
-    
-    def getJSON(self):
-        #convert to json format complies with database entity
-        return {
-            "dateTime": self._timeStamp,  
-            "system": self._usageOnSys,
-            "user": self._usageOnUser,
-            "interrupt": self._usageOnInterrupt 
-        }
-        
+        return self.__total
         
     

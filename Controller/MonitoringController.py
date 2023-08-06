@@ -1,5 +1,6 @@
 from Controller.WsClient import WsClient
 from Controller.CPUOverseer import CPUOverseer
+from Controller.RealtimeCPUOverseer import RealtimeCPUOverseer 
 from Controller.Abstract.IntervalMetricOverseer import IntervalMetricOverseer 
 import threading
 import time
@@ -28,36 +29,60 @@ class MonitoringController:
         self.setup()
                 
     def setup(self):
-        'request configs from server db and start/stop/initialize necessaries'
+        'request configs from server db and start/stop/initialize only necessaries'
         self.__intervalOverseer['cpu'] = CPUOverseer(self.__wsc,self.__payload)
+        self.__realtimeOverseer['cpu'] = RealtimeCPUOverseer(self.__wsc,self.__payload)
         self.toggleIntervalMonitoring(True)
+        self.toggleRealtimeMonitoring(True)
         print(self.__intervalOverseer)
     
-    def toggleIntervalMonitoring(self,run:bool): 
-        ''
+    'true will start/restart, false wil stop'
+    def toggleIntervalMonitoring(self,run:bool):  
+        
+        'stop all interval monitoring and pushing'
+        for key in self.__intervalOverseer.keys(): 
+            self.__intervalOverseer[key]:IntervalMetricOverseer.stop()
+        if self.__isPushing:
+            with self.__lock:
+                self.__isPushing = False
+            self.__thread.join()
+        
+        'if run is true than re run'
         if run:
             'start all interval monitoring and pushing'
             for key in self.__intervalOverseer.keys(): 
                 self.__intervalOverseer[key].start()
             with self.__lock:
                 self.__isPushing = True
-            self.__thread = threading.Thread(target=self.__pushMetric).start()
-        else:
-            'stop all interval monitoring and pushing'
-            for key in self.__intervalOverseer.keys(): 
-                self.__intervalOverseer[key]:IntervalMetricOverseer.stop()
-            with self.__lock:
-                self.__isPushing = False
-            self.__thread.join()
+            self.__thread = threading.Thread(target=self.__pushMetric).start() 
     
         
+    'true will start/restart, false wil stop'
     def toggleRealtimeMonitoring(self,run:bool):
-        ''
+        
+        'stop all realtime monitoring processes'
+        for key in self.__realtimeOverseer.keys(): 
+            self.__realtimeOverseer[key].stop() 
+        
+        'if run true re run processes'
+        if run:
+            'start all interval monitoring and pushing'
+            for key in self.__realtimeOverseer.keys(): 
+                self.__realtimeOverseer[key].start()   
         
     def updatePushInterval(self,val:int):
-        ''
+        
+        'stop process and perform parameter update' 
+        if self.__isPushing:
+            with self.__lock:
+                self.__isPushing = False
+            
+        self.__thread.join()
+        
         with self.__lock:
             self.__pushInterval = val
+         
+        self.__thread = threading.Thread(target=self.__pushMetric).start() 
     
     def __pushMetric(self):
         ''

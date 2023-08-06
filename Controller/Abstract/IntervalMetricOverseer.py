@@ -54,7 +54,7 @@ class IntervalMetricOverseer(MetricOverseer):
             self.__payloadRef[key].append(reading) 
             print(self.__payloadRef)
         
-    def _triggerAlert(self,message:dict):
+    def _triggerAlert(self,label:str,reading:dict):
         'check if alert is on cooldown' 
         with self._getThreadLock():
             isCooldown = self.__isAlertOnCooldown
@@ -63,7 +63,11 @@ class IntervalMetricOverseer(MetricOverseer):
             self.__thresholdCurrentTick += 1
             print(self.__thresholdCurrentTick)
             if self.__thresholdCurrentTick >= self.__thresholdTick:
-                self._sendMessage(json.dumps(message).replace('_',' '))
+                payload = {
+                    "path":"alert/" + label,
+                    "data": reading
+                }
+                self._sendMessage(json.dumps(payload).replace('_',' '))
                 self.__startAlertCooldown()
     
     def _resetTick(self):

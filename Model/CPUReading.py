@@ -48,7 +48,10 @@ class CPUReading:
                 if line.startswith('cpu') and not line[3].isdigit(): #exclude that have digit to only extract total of all core 
                     return line,timestamp
         return 
- 
+    
+    @staticmethod
+    def metricLabel():
+        return "cpu"
      
     def getUsageOnUserProcess(self):
         return self.__usageOnUser

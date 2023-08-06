@@ -22,14 +22,11 @@ class CPUOverseer(IntervalMetricOverseer):
         metric = CPUReading(reading1,reading2,timestamp)
         
         'add reading to payload'
-        self._addReading("cpu",metric.toJSON()) 
+        self._addReading(CPUReading.metricLabel(),metric.toJSON()) 
         
         'alert condition and trigger'  
         if metric.getTotal() >= self._getThresholdValue():  
-            self._triggerAlert({
-                "path":"alert/cpu",
-                "data": metric.toJSON()
-            })
+            self._triggerAlert(CPUReading.metricLabel(),metric.toJSON())
         else:
             self._resetTick()
          

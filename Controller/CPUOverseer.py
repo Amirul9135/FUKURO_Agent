@@ -14,17 +14,17 @@ class CPUOverseer(IntervalMetricOverseer):
         wsc.addListener("toggle/cpu", lambda val: self.start() if val else self.stop())
  
     def _metricExtraction(self): 
-        'Extract 2 reading at 1 sec interval timepoint' 
+        #Extract 2 reading at 1 sec interval timepoint' 
         reading1, _ = CPUReading.readCurrentProc() 
         time.sleep(1)
         reading2, timestamp = CPUReading.readCurrentProc()
         
         metric = CPUReading(reading1,reading2,timestamp)
         
-        'add reading to payload'
+        #add reading to payload'
         self._addReading(CPUReading.metricLabel(),metric.toJSON()) 
         
-        'alert condition and trigger'  
+        #alert condition and trigger'  
         if metric.getTotal() >= self._getThresholdValue():  
             self._triggerAlert(CPUReading.metricLabel(),metric.toJSON())
         else:

@@ -1,9 +1,25 @@
 from Controller.MonitoringController import MonitoringController
 from Controller.WsClient import WsClient  
+import time
 
 print("start")
 
-cont = MonitoringController(WsClient("asd","asd"))
+ws = WsClient("ws://192.168.8.102:5000",{
+    "nodeId":1,
+    "passKey":"asd123",
+    "jwt":"eyJ1c2VyIjp7ImlkIjoxLCJuYW1lIjoiYW1pcnVsIiwidXNlcm5hbWUiOiJhYTExMjIifSwiaWF0IjoxNjkyNDQwODY5fQ.hCWV-54fJ9VJOKb-ldQ-n898AYTwQjKkGanauu54VXk",
+    "uid":1
+})
+ws.run()
+print("connecting")
+while(not ws.isReady()):
+    print('Connecting..',flush=True)
+    time.sleep(0.5) 
+if (not ws.isConnected()):
+    print("unnable to connect to server")
+else:
+    print("connected")
+    cont = MonitoringController(ws)
 
 
 

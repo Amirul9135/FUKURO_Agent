@@ -13,12 +13,12 @@ class RealtimeCPUOverseer(RealtimeMetricOverseer):
         
     
     def _metricExtraction(self): 
-        'Extract 2 reading at 1 sec interval timepoint' 
+        #Extract 2 reading at 1 sec interval timepoint' 
         reading1, _ = CPUReading.readCurrentProc() 
         time.sleep(1)
         reading2, timestamp = CPUReading.readCurrentProc()
         
         metric = CPUReading(reading1,reading2,timestamp)
         
-        'add reading to payload'
+        #add reading to payload'
         self._transmitReading(CPUReading.metricLabel(),metric.toJSON()) 

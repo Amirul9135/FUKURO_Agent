@@ -34,7 +34,7 @@ class MonitoringController:
         self.__intervalOverseer['cpu'] = CPUOverseer(self.__wsc,self.__payload)
         self.__realtimeOverseer['cpu'] = RealtimeCPUOverseer(self.__wsc,self.__payload)
         self.toggleIntervalMonitoring(True)
-        self.toggleRealtimeMonitoring(True)
+        self.toggleRealtimeMonitoring(False)
         print(self.__intervalOverseer)
     
     #true will start/restart, false wil stop'
@@ -54,8 +54,9 @@ class MonitoringController:
             for key in self.__intervalOverseer.keys(): 
                 self.__intervalOverseer[key].start()
             with self.__lock:
-                self.__isPushing = True
-            self.__thread = threading.Thread(target=self.__pushMetric).start() 
+                self.__isPushing = True 
+            self.__thread = threading.Thread(target=self.__pushMetric)
+            self.__thread.start()
     
         
     #true will start/restart, false wil stop'
@@ -72,24 +73,45 @@ class MonitoringController:
                 self.__realtimeOverseer[key].start()   
         
     def updatePushInterval(self,val:int):
+        if type(val) != int:
+            val = int(val) 
+        
+        
+        #if same value no change no need to proceed
+        if self.__pushInterval == val:
+            print('update cancel, same value')
+            return
         
         #stop process and perform parameter update' 
         if self.__isPushing:
             with self.__lock:
+                tmpPush = self.__isPushing
                 self.__isPushing = False
             
         self.__thread.join()
         
         with self.__lock:
-            self.__pushInterval = val
-         
-        self.__thread = threading.Thread(target=self.__pushMetric).start() 
+            self.__pushInterval = val 
+            self.__isPushing = tmpPush
+        self.__thread = threading.Thread(target=self.__pushMetric)
+        self.__thread.start() 
     
     def __pushMetric(self):
         ''
+        print('push metric')
         start_time = 0
         end_time = 0
         while self.__isPushing:
+            
+            with self.__lock:
+                tmpInterval = self.__pushInterval
+            
+            tmpInterval = tmpInterval - math.floor(end_time - start_time)
+            
+            while self.__isPushing and tmpInterval > 0:
+                time.sleep(1)
+                tmpInterval -= 1
+            
             start_time = time.time() 
             with self.__lock: 
                 payload = {
@@ -106,14 +128,6 @@ class MonitoringController:
             self.__wsc.send(payload)
         
             end_time = time.time()
-            with self.__lock:
-                tmpInterval = self.__pushInterval
-            
-            tmpInterval = tmpInterval - math.floor(end_time - start_time)
-            
-            while self.__isPushing and tmpInterval > 0:
-                time.sleep(1)
-                tmpInterval -= 1
                 
             
             

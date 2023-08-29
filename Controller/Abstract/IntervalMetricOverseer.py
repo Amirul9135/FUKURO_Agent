@@ -33,14 +33,21 @@ class IntervalMetricOverseer(MetricOverseer):
         self.__cooldownThread:threading.Thread = None
         
     def updateThreshold(self,val:int):
+        if self.__threshold == val :
+            return
         with self._getThreadLock():
             self.__threshold = val
     
     def updateThresholdDuration(self,val:int):
+        if self.__thresholdTick == val:
+            return
         with self._getThreadLock():
             self.__thresholdTick = val
         
     def updateAlertCooldown(self,val:int):
+        if self.__alertCooldown == val:
+            return
+        
         self.__resetAlert()
         self._resetTick()
         self.__alertCooldown = val

@@ -7,7 +7,7 @@ print("start")
 ws = WsClient("ws://192.168.8.102:5000",{
     "nodeId":1,
     "passKey":"asd123",
-    "jwt":"eyJ1c2VyIjp7ImlkIjoxLCJuYW1lIjoiYW1pcnVsIiwidXNlcm5hbWUiOiJhYTExMjIifSwiaWF0IjoxNjkyNDQwODY5fQ.hCWV-54fJ9VJOKb-ldQ-n898AYTwQjKkGanauu54VXk",
+    "jwt":"eyJ1c2VyIjp7ImlkIjoxLCJuYW1lIjoiYW1pcnVsIGFzcmFmIiwidXNlcm5hbWUiOiJhYTExMjMifSwiaWF0IjoxNjkzMjczNTk0fQ.HG2SJXWqhh6JIwIhSGMnDsNWilfKfCFzO6iNdXjUx1M",
     "uid":1
 })
 ws.run()

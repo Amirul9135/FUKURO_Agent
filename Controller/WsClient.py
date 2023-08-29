@@ -29,6 +29,9 @@ class WsClient:
         #parse the message to identify task or multiple task
         try:
             parsed = json.loads(message)
+            if(type(parsed) == str):
+                parsed = json.loads(parsed)
+            print(type(parsed))
             if isinstance(parsed,dict):
                 self.__executeTask(parsed)
             elif isinstance(parsed,list):
@@ -48,8 +51,7 @@ class WsClient:
             if 'data' in task:
                 self.__listeners[task['path']](task['data'])
             else:
-                self.__listeners[task['path']]()
-        print('sini lak')
+                self.__listeners[task['path']]() 
     
     def __onClose(self,ws,close_status_code,close_msg):
         print("closed")

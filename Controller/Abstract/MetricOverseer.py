@@ -27,7 +27,8 @@ class MetricOverseer(ABC):
     def start(self):   
         if not self.__isOverseeing: 
             self.__isOverseeing = True
-            self.__thread = threading.Thread(target=self.__extractMetric).start()
+            self.__thread = threading.Thread(target=self.__extractMetric)
+            self.__thread.start()
     
     #this method gracefully stop the overseeing functionility which is running on its own thread'
     def stop(self): 
@@ -37,6 +38,8 @@ class MetricOverseer(ABC):
     
     #update the value of the interval'
     def updateInterval(self,val:int):
+        if self.__interval == val: #if same no change no need restart
+            return
         self.stop()
         self.__interval = val
         self.start()

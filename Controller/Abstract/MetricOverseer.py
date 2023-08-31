@@ -24,7 +24,8 @@ class MetricOverseer(ABC):
         self.__lock :threading.Lock = threading.Lock()
         
     #this method execute the overseeing functionality on its own thread'
-    def start(self):   
+    def start(self):  
+         
         if not self.__isOverseeing: 
             self.__isOverseeing = True
             self.__thread = threading.Thread(target=self.__extractMetric)

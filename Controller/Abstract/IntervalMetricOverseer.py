@@ -32,7 +32,8 @@ class IntervalMetricOverseer(MetricOverseer):
         #thread which the cooldown process execute on'
         self.__cooldownThread:threading.Thread = None
         
-    def updateThreshold(self,val:int):
+    def updateThreshold(self,val:float):
+        print(type(val))
         if self.__threshold == val :
             return
         with self._getThreadLock():
@@ -98,7 +99,8 @@ class IntervalMetricOverseer(MetricOverseer):
         
         if not self.__isAlertOnCooldown:
             self.__isAlertOnCooldown = True
-        self.__cooldownThread = threading.Thread(target=self.__alertCooldownProcess).start()
+        self.__cooldownThread = threading.Thread(target=self.__alertCooldownProcess)
+        self.__cooldownThread.start()
     
     #alert cooldown process and counting'
     def __alertCooldownProcess(self):

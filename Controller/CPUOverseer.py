@@ -25,7 +25,8 @@ class CPUOverseer(IntervalMetricOverseer):
         self._addReading(CPUReading.metricLabel(),metric.toJSON()) 
         
         #alert condition and trigger'  
-        if metric.getTotal() >= self._getThresholdValue():  
+        #0 threshold means disabled
+        if (self._getThresholdValue() > 0) and (metric.getTotal() >= self._getThresholdValue()):  
             self._triggerAlert(CPUReading.metricLabel(),metric.toJSON())
         else:
             self._resetTick()

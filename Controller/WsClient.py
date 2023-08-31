@@ -50,8 +50,10 @@ class WsClient:
             #execute the task using listener in the map
             if 'data' in task:
                 self.__listeners[task['path']](task['data'])
+                print('executed ' , task['path'] , ' value ' , task['data'])
             else:
                 self.__listeners[task['path']]() 
+                print('executed ' , task['path'])
     
     def __onClose(self,ws,close_status_code,close_msg):
         print("closed")

@@ -24,9 +24,12 @@ class MonitoringController:
         self.__isPushing:bool = False
         
         #bind web socket listeners'
-        wsc.addListener("interval/push", self.updatePushInterval)
-        wsc.addListener("toggle/push", self.toggleIntervalMonitoring)  
+        self.__wsc.addListener("interval/push", self.updatePushInterval)
+        self.__wsc.addListener("toggle/push", self.toggleIntervalMonitoring)  
         self.setup()
+        self.__wsc.send(json.dumps({
+                "path":"config"
+            }).replace('_',' '))
         print("Starting monitoring")
                 
     def setup(self):

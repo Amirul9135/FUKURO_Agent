@@ -25,25 +25,25 @@ class WsClient:
     
     
     def __onMessage(self,ws,message):
-        print("received ", message)
+        print("received ")
+        print(message)
         #parse the message to identify task or multiple task
         try:
             parsed = json.loads(message)
             if(type(parsed) == str):
-                parsed = json.loads(parsed)
-            print(type(parsed))
+                parsed = json.loads(parsed) 
             if isinstance(parsed,dict):
                 self.__executeTask(parsed)
             elif isinstance(parsed,list):
-                for task in parsed:
+                for task in parsed: 
                     self.__executeTask(task)
         except json.JSONDecodeError:
             print("message in unsupported format received")
         
     def __executeTask(self,task):
-        #task should be a dict with 2 key path and data(optional)
-        print('sini',task)
+        #task should be a dict with 2 key path and data(optional) 
         if task['path'] == "connected":
+            
             self.__isReady = True 
             self.__connected = True
         if task['path'] in self.__listeners:

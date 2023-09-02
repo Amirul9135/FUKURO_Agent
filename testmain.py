@@ -28,7 +28,7 @@ def main():
 
 #main()
 test =  MEMReading()
-print(test.toJson())
+print(test.toJSON())
 
 main()
 

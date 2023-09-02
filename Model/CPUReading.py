@@ -64,7 +64,7 @@ class CPUReading:
     def getReadingTime(self):
         return self.__timeStamp
     
-    def getTotal(self):
+    def getUsage(self):
         return self.__total
         
     

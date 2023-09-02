@@ -23,11 +23,16 @@ class MEMReading:
                             value = value_str
                         values[key] = value
         self.__total:int  = values["MemTotal"]
+        
+        #% of memory used for something includeing buffer and cache
         self.__used:float = round( (values["MemTotal"] - values["MemFree"] ) / values["MemTotal"] * 100,2)
+        
+        #% of the total used as cache
         self.__cached:float =  round( (values["Cached"] - values["SReclaimable"] ) / values["MemTotal"] * 100,2)
+        #% of the total used as buffer
         self.__buffer:float =  round( (values["Buffers"] ) / values["MemTotal"] * 100,2) 
     
-    def toJson(self):
+    def toJSON(self):
         return{
             "dateTime": self.__timeStamp,
             "total": self.__total,
@@ -35,5 +40,9 @@ class MEMReading:
             "cached": self.__cached,
             "buffer": self.__buffer
         }
+    def getUsage(self):
+        return self.__used
     
-        
+    @staticmethod
+    def metricLabel():
+        return "mem"

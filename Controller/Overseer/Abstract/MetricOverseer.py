@@ -11,7 +11,7 @@ class MetricOverseer(ABC):
         self.__wsc:WsClient = wsc
         
         #the thread that this overseer processes will execute on'
-        self.__thread :threading.Thread = None
+        self.__thread :threading.Thread =  threading.Thread(target=self.__extractMetric)
         
         
         #the flag variable to indicate process status'
@@ -35,15 +35,18 @@ class MetricOverseer(ABC):
     def stop(self): 
         if self.__isOverseeing:
             self.__isOverseeing = False
-            self.__thread.join()
+            if self.__thread.is_alive():
+                self.__thread.join()
     
     #update the value of the interval'
     def updateInterval(self,val:int):
         if self.__interval == val: #if same no change no need restart
             return
+        tmpFlag = self.__isOverseeing
         self.stop()
         self.__interval = val
-        self.start()
+        if tmpFlag:
+            self.start()
         
     #this method perform the metric extraction task continuosly'    
     def __extractMetric(self):  

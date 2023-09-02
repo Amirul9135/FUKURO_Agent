@@ -1,7 +1,15 @@
 from Controller.WsClient import WsClient
+
+
 from Controller.Overseer.Interval.CPUOverseer import CPUOverseer
+from Controller.Overseer.Interval.MEMOverseer import MEMOverseer
+
+
 from Controller.Overseer.Realtime.RealtimeCPUOverseer import RealtimeCPUOverseer  
-from Controller.Overseer.Abstract.IntervalMetricOverseer import IntervalMetricOverseer
+from Controller.Overseer.Realtime.RealtimeMEMOverseer import RealtimeMEMOverseer 
+
+
+from Controller.Overseer.Abstract.IntervalMetricOverseer import IntervalMetricOverseer 
 import threading
 import time
 import math 
@@ -19,7 +27,7 @@ class MonitoringController:
         
         self.__payload:dict = {}
         self.__pushInterval:int = 15 
-        self.__thread:threading.Thread = None
+        self.__thread:threading.Thread =  threading.Thread(target=self.__pushMetric)
         self.__lock:threading.Lock = threading.Lock()
         self.__isPushing:bool = False
         
@@ -27,18 +35,21 @@ class MonitoringController:
         self.__wsc.addListener("interval/push", self.updatePushInterval)
         self.__wsc.addListener("toggle/push", self.toggleIntervalMonitoring)  
         self.setup()
-        self.__wsc.send(json.dumps({
-                "path":"config"
-            }).replace('_',' '))
         print("Starting monitoring")
                 
     def setup(self):
-        #request configs from server db and start/stop/initialize only necessaries'
+        #initialize controllers
         self.__intervalOverseer['cpu'] = CPUOverseer(self.__wsc,self.__payload)
-        self.__realtimeOverseer['cpu'] = RealtimeCPUOverseer(self.__wsc,self.__payload)
-        self.toggleIntervalMonitoring(True)
-        self.toggleRealtimeMonitoring(False)
-        print(self.__intervalOverseer)
+        self.__realtimeOverseer['cpu'] = RealtimeCPUOverseer(self.__wsc,self.__payload) 
+        
+        self.__intervalOverseer['mem'] = MEMOverseer(self.__wsc,self.__payload)
+        self.__realtimeOverseer['mem'] = RealtimeMEMOverseer(self.__wsc,self.__payload) 
+        
+        
+        #request configs from server db and start/stop/initialize only necessaries'
+        self.__wsc.send(json.dumps({
+                "path":"config"
+            }).replace('_',' '))
     
     #true will start/restart, false wil stop'
     def toggleIntervalMonitoring(self,run:bool):  
@@ -49,7 +60,8 @@ class MonitoringController:
         if self.__isPushing:
             with self.__lock:
                 self.__isPushing = False
-            self.__thread.join()
+            if self.__thread.is_alive():
+                self.__thread.join()
         
         #if run is true than re run'
         if run:
@@ -86,12 +98,13 @@ class MonitoringController:
             return
         
         #stop process and perform parameter update' 
+        tmpPush = False
         if self.__isPushing:
             with self.__lock:
-                tmpPush = self.__isPushing
+                tmpPush = True
                 self.__isPushing = False
-            
-        self.__thread.join()
+        if self.__thread.is_alive():
+            self.__thread.join()
         
         with self.__lock:
             self.__pushInterval = val 

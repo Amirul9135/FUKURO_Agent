@@ -1,7 +1,7 @@
 from Controller.WsClient import WsClient
-from Controller.CPUOverseer import CPUOverseer
-from Controller.RealtimeCPUOverseer import RealtimeCPUOverseer 
-from Controller.Abstract.IntervalMetricOverseer import IntervalMetricOverseer 
+from Controller.Overseer.Interval.CPUOverseer import CPUOverseer
+from Controller.Overseer.Realtime.RealtimeCPUOverseer import RealtimeCPUOverseer  
+from Controller.Overseer.Abstract.IntervalMetricOverseer import IntervalMetricOverseer
 import threading
 import time
 import math 

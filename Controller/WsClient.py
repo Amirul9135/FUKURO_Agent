@@ -24,6 +24,8 @@ class WsClient:
             })) 
     
     
+
+    
     def __onMessage(self,ws,message):
         print("received ")
         print(message)

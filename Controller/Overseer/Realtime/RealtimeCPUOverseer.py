@@ -1,4 +1,4 @@
-from Controller.Abstract.RealtimeMetricOverseer import RealtimeMetricOverseer 
+from Controller.Overseer.Abstract.RealtimeMetricOverseer import RealtimeMetricOverseer 
 from Controller.WsClient import WsClient 
 from Model.CPUReading import CPUReading
 import time

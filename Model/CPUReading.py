@@ -1,5 +1,4 @@
-from datetime import datetime 
-import json
+from datetime import datetime  
 
 class CPUReading:
     def __init__(self,reading1,reading2,timeStamp): 

@@ -1,5 +1,5 @@
 from Controller.WsClient import WsClient
-from Controller.Abstract.MetricOverseer import MetricOverseer 
+from Controller.Overseer.Abstract.MetricOverseer import MetricOverseer 
 import time
 import threading
 import json

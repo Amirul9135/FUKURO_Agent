@@ -1,4 +1,4 @@
-from Controller.Abstract.IntervalMetricOverseer import IntervalMetricOverseer 
+from Controller.Overseer.Abstract.IntervalMetricOverseer import IntervalMetricOverseer 
 from Controller.WsClient import WsClient 
 from Model.CPUReading import CPUReading
 import time

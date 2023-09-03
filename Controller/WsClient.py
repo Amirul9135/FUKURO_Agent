@@ -37,6 +37,7 @@ class WsClient:
             if isinstance(parsed,dict):
                 self.__executeTask(parsed)
             elif isinstance(parsed,list):
+                print('listo')
                 for task in parsed: 
                     self.__executeTask(task)
         except json.JSONDecodeError:

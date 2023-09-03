@@ -3,13 +3,18 @@ from Controller.WsClient import WsClient
 
 from Controller.Overseer.Interval.CPUOverseer import CPUOverseer
 from Controller.Overseer.Interval.MEMOverseer import MEMOverseer
+from Controller.Overseer.Interval.DiskOverseer import DiskOverseer
 
 
 from Controller.Overseer.Realtime.RealtimeCPUOverseer import RealtimeCPUOverseer  
 from Controller.Overseer.Realtime.RealtimeMEMOverseer import RealtimeMEMOverseer 
+from Controller.Overseer.Realtime.RealtimeDiskOverseer import RealtimeDiskOverseer 
 
 
 from Controller.Overseer.Abstract.IntervalMetricOverseer import IntervalMetricOverseer 
+
+from Controller.NodeSpecification import NodeSpecification
+
 import threading
 import time
 import math 
@@ -34,7 +39,12 @@ class MonitoringController:
         #bind web socket listeners'
         self.__wsc.addListener("interval/push", self.updatePushInterval)
         self.__wsc.addListener("toggle/push", self.toggleIntervalMonitoring)  
-        self.setup()
+        disk = NodeSpecification.diskList()
+        self.__wsc.send(json.dumps({ 
+            'path': 'post/spec/disk',
+            'data':disk
+            }).replace('_',' '))
+        self.setup() 
         print("Starting monitoring")
                 
     def setup(self):
@@ -45,10 +55,17 @@ class MonitoringController:
         self.__intervalOverseer['mem'] = MEMOverseer(self.__wsc,self.__payload)
         self.__realtimeOverseer['mem'] = RealtimeMEMOverseer(self.__wsc,self.__payload) 
         
+        disk = {}
+        self.__intervalOverseer['dsk'] = DiskOverseer(self.__wsc,self.__payload,disk)
+        self.__realtimeOverseer['dsk'] = RealtimeDiskOverseer(self.__wsc,self.__payload,disk) 
+        
         
         #request configs from server db and start/stop/initialize only necessaries'
         self.__wsc.send(json.dumps({
                 "path":"config"
+            }).replace('_',' '))
+        self.__wsc.send(json.dumps({ 
+            'path': 'get/spec/disk' 
             }).replace('_',' '))
     
     #true will start/restart, false wil stop'

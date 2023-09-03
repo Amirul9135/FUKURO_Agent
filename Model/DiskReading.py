@@ -27,9 +27,9 @@ class DiskReading:
         return {
             "name": name,
             "dateTime": self.__timeStamp,  
-            "usage": self.__usage,
-            "write": self.__write,
-            "read": self.__read 
+            "utilization": self.__usage,
+            "writeSpeed": self.__write,
+            "readSpeed": self.__read 
         }  
         
     def getUsage(self):

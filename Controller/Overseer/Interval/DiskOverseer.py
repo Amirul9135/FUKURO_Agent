@@ -29,6 +29,7 @@ class DiskOverseer(IntervalMetricOverseer):
         for key in reading2:
             metric = DiskReading(reading1[key]['reading'],reading2[key]['reading'],reading2[key]['sect'],elapsed,t2)
             self._addReading(DiskReading.metricLabel(),metric.toJSON(key))  
+            self._triggerAlert(metric.getUsage(),DiskReading.metricLabel(),metric.toJSON(key)) 
         
          
     def __updateDisklist(self,val):

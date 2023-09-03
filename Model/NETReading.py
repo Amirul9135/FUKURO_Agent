@@ -8,9 +8,7 @@ class NETReading:
         # transmit [8] byte ;[9] packet ;[10] err ;[11] drop ;[12] fifo ;[13] colls ;[14] carrier    ;[15] compressed;
         self.__timeStamp = timeStamp.strftime("%Y-%m-%d_%H:%M:%S")
         self.__rByte = round((reading2[0] - reading1[0]) / 1024,2)
-        self.__tByte = round((reading2[8] - reading1[8]) / 1024,2)
-        self.__rPacket = reading2[1] - reading1[1]
-        self.__tPacket = reading2[9] - reading1[9]
+        self.__tByte = round((reading2[8] - reading1[8]) / 1024,2) 
         self.__rErr = reading2[2] - reading1[2]
         self.__tErr = reading2[10] - reading1[10]
         self.__rDrop = reading2[3] - reading1[3]
@@ -32,19 +30,19 @@ class NETReading:
         finalReading = readings[0]
         for i in range(1,len(readings)):
             finalReading = [a1+a2 for a1,a2 in zip(finalReading,readings[i])] 
-        return timestamp, finalReading
-        
+        return finalReading, timestamp
+    
+    def getReceived(self):
+        return self.__rByte
     def toJSON(self):
         #convert to json format complies with database entity
         return {
             "dateTime": self.__timeStamp,
-            "rByte": self.__rByte,
-            "rPacket": self.__rPacket,
-            "rErr": self.__rErr,
+            "rkByte": self.__rByte, 
+            "rError": self.__rErr,
             "rDrop": self.__rDrop,
-            "tByte": self.__tByte,
-            "tPacket": self.__tPacket,
-            "tErr" : self.__tErr,
+            "tkByte": self.__tByte, 
+            "tError" : self.__tErr,
             "tDrop" : self.__tDrop
         } 
         
@@ -52,4 +50,5 @@ class NETReading:
     @staticmethod
     def metricLabel():
         return "net"
+     
  

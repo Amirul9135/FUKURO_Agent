@@ -4,11 +4,13 @@ from Controller.WsClient import WsClient
 from Controller.Overseer.Interval.CPUOverseer import CPUOverseer
 from Controller.Overseer.Interval.MEMOverseer import MEMOverseer
 from Controller.Overseer.Interval.DiskOverseer import DiskOverseer
+from Controller.Overseer.Interval.NETOverseer import NETOverseer
 
 
 from Controller.Overseer.Realtime.RealtimeCPUOverseer import RealtimeCPUOverseer  
 from Controller.Overseer.Realtime.RealtimeMEMOverseer import RealtimeMEMOverseer 
 from Controller.Overseer.Realtime.RealtimeDiskOverseer import RealtimeDiskOverseer 
+from Controller.Overseer.Realtime.RealtimeNETOverseer import RealtimeNETOverseer 
 
 
 from Controller.Overseer.Abstract.IntervalMetricOverseer import IntervalMetricOverseer 
@@ -58,6 +60,9 @@ class MonitoringController:
         disk = {}
         self.__intervalOverseer['dsk'] = DiskOverseer(self.__wsc,self.__payload,disk)
         self.__realtimeOverseer['dsk'] = RealtimeDiskOverseer(self.__wsc,self.__payload,disk) 
+        
+        self.__intervalOverseer['net'] = NETOverseer(self.__wsc,self.__payload)
+        self.__realtimeOverseer['net'] = RealtimeNETOverseer(self.__wsc,self.__payload) 
         
         
         #request configs from server db and start/stop/initialize only necessaries'

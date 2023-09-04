@@ -1,5 +1,5 @@
 import websocket
-import threading
+import threading 
 import json
  
 class WsClient:
@@ -7,7 +7,7 @@ class WsClient:
     #initialize the web socket and connect'
     def __init__(self,url,verification):
         self.__verification:str = verification   
-        self.__listeners:dict = {}
+        self.__listeners:dict = {} 
         self.__ws:websocket.WebSocketApp = websocket.WebSocketApp(url,
                                          on_open=self.__onOpen,
                                       on_message=self.__onMessage,
@@ -59,6 +59,7 @@ class WsClient:
     
     def __onClose(self,ws,close_status_code,close_msg):
         print("closed")
+        self.run()
         
     def __onError(self,ws,error):
         print('web socket error',error)

@@ -52,7 +52,13 @@ class MonitoringController:
             }).replace('_',' '))
         self.setup() 
         print("Starting monitoring")
-                
+    def stopAll(self):
+        for overseer in self.__intervalOverseer:
+            overseer.stop()
+        for rtOv in self.__realtimeOverseer:
+            rtOv.stop()
+        self.toggleIntervalMonitoring(False) 
+         
     def setup(self):
         #initialize controllers
         self.__intervalOverseer['cpu'] = CPUOverseer(self.__wsc,self.__payload)
@@ -79,9 +85,7 @@ class MonitoringController:
     #true will start/restart, false wil stop'
     def toggleIntervalMonitoring(self,run:bool):  
         
-        #stop all interval monitoring and pushing'
-        for key in self.__intervalOverseer.keys(): 
-            self.__intervalOverseer[key]:IntervalMetricOverseer.stop()
+        #stop all interval monitoring and pushing' 
         if self.__isPushing:
             with self.__lock:
                 self.__isPushing = False
@@ -89,28 +93,13 @@ class MonitoringController:
                 self.__thread.join()
         
         #if run is true than re run'
-        if run:
-            #start all interval monitoring and pushing'
-            for key in self.__intervalOverseer.keys(): 
-                self.__intervalOverseer[key].start()
+        if run: 
             with self.__lock:
                 self.__isPushing = True 
             self.__thread = threading.Thread(target=self.__pushMetric)
             self.__thread.start()
     
-        
-    #true will start/restart, false wil stop'
-    def toggleRealtimeMonitoring(self,run:bool):
-        
-        #stop all realtime monitoring processes'
-        for key in self.__realtimeOverseer.keys(): 
-            self.__realtimeOverseer[key].stop() 
-        
-        #if run true re run processes'
-        if run:
-            #start all interval monitoring and pushing'
-            for key in self.__realtimeOverseer.keys(): 
-                self.__realtimeOverseer[key].start()   
+         
         
     def updatePushInterval(self,val:int):
         if type(val) != int:

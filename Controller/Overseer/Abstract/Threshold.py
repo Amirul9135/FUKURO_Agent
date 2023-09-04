@@ -52,6 +52,10 @@ class Threshold:
         
     def updateTick(self,val):
         self.__tick = val
+    
+    def stopAll(self):
+        for cd in self.__all:
+            self.__refresh(cd)
         
     def __add(self,value):
         index = 0
@@ -110,4 +114,5 @@ class Threshold:
         cd["tick"] = 0
         if cd["thread"] != None and cd["thread"].is_alive():
             cd["thread"].join()
+    
          

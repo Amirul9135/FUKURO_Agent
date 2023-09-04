@@ -8,9 +8,8 @@ import pexpect
 class CommandExecutor:
     def __init__(self,wsc:WsClient) :
         self.__wsc:WsClient = wsc
-        self.__wsc.addListener("command", self.__execute) 
-    
-    
+        self.__wsc.addListener("command", self.__execute)  
+        
     
     def __execute(self,data):  
         try:

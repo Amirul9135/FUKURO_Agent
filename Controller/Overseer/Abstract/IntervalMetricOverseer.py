@@ -36,6 +36,9 @@ class IntervalMetricOverseer(MetricOverseer):
                     "path":"alert/" + label,
                     "data": reading
                 }) 
+    def stop(self):
+        self.__threshold.stopAll()
+        super().stop()
      
    
             

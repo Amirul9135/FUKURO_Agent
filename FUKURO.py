@@ -119,13 +119,23 @@ def cli():
         # Start the daemon with the provided credentials
         if not all([args.username, args.password, args.passkey, args.nodeId]):
             parser.error("When starting, all of --username, --password, --passkey, and --nodeId are required.")
-        username = args.username
-        password = args.password
-        passkey = args.passkey
-        nodeId = args.nodeId
-        print(f"Starting FUKURO Monitoring ")
-        app = FUKURO(username,password,passkey,nodeId)
-        app.start()
+        
+        try: 
+            with open("/var/run/FUKURO_Agent.pid", "r") as pid_file:
+                print("FUKURO Agent already running")
+        except FileNotFoundError as fe: #if not running only run new
+            username = args.username
+            password = args.password
+            passkey = args.passkey
+            nodeId = args.nodeId
+            print(f"Starting FUKURO Monitoring ")
+            try:
+                app = FUKURO(username,password,passkey,nodeId)
+                app.start()
+            except Exception as e:
+                print('Failed to start monitoring',e)
+        except Exception as e: 
+            print(e)
     elif action == "stop":
         if not all([args.passkey]):
             parser.error("When stopping, passkey are required")
@@ -137,18 +147,19 @@ def cli():
                 pid = int(pid_file.read())
                 os.kill(pid, signal.SIGTERM)
                 print("FUKURO Monitoring stopped")  
-        except Exception as e:
+        except FileNotFoundError as fe:
+            print("PID doesn't exist, Monitoring is not running")
+        except Exception as e: 
             print(e)
-    elif action == "stat":
-        print('status')
+    elif action == "stat": 
         pid_file = "/var/run/FUKURO_Agent.pid" 
         if os.path.exists(pid_file):
             with open(pid_file, "r") as pidfile:
                 pid = int(pidfile.read().strip())
                 if os.path.exists(f"/proc/{pid}"):
-                    print('running')
+                    print('FUKURO Agent Running') 
                     return
-        print('stopped')
+        print('FUKURO Agent Is Not Running') 
                 
 
 if __name__ == "__main__":

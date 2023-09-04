@@ -80,8 +80,8 @@ class MetricOverseer(ABC):
                 
                 
     #send a string to the web socket server'
-    def _sendMessage(self,message:str):
-        self.__wsc.send(message)
+    def _sendMessage(self,message:str): 
+        self.__wsc.send(message) 
     
     
     def _getThreadLock(self):

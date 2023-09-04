@@ -156,15 +156,16 @@ class MonitoringController:
                 payload = {
                     "path":"reading",
                     "data": self.__payload.copy()  
-                }
-                
-            with self.__lock: 
-                self.__payload.clear()
-            print('pm') 
+                } 
             #minify payload
             payload = re.sub(r"\s+|\n","",json.dumps(payload))
             payload = payload.replace('_',' ')  
-            self.__wsc.send(payload)
+            try:
+                self.__wsc.send(payload)
+                with self.__lock: 
+                    self.__payload.clear()
+            except Exception as e:
+                print('failed to push metric',e)
         
             end_time = time.time()
                 

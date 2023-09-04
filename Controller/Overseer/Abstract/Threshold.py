@@ -16,13 +16,20 @@ class Threshold:
     
     def evaluate(self,value,payload):
         reached = self.__check(value)  
+        tmpReached = []
         for threshold in reached: 
             if self.__checkTick(threshold):
-                print("alert",value,threshold,payload)       
-                payload = re.sub(r"\s+|\n","",json.dumps(payload))
-                payload = payload.replace('_',' ')  
-                self.__send(payload)
-                self.__startCooldown(threshold)
+                tmpReached.append(threshold)
+        if len(tmpReached)> 0 :
+            print("alert",value,threshold,payload)       
+            payload = re.sub(r"\s+|\n","",json.dumps(payload))
+            payload = payload.replace('_',' ')  
+            try:
+                self.__send(payload) 
+                for th in tmpReached:
+                    self.__startCooldown(th)
+            except Exception as e:
+                print('threshold fail',e)
                 
     def updateCooldown(self,value):
         with self.__lock:

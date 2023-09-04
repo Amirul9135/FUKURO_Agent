@@ -1,6 +1,7 @@
 import websocket
 import threading 
 import json
+import time 
  
 class WsClient:
     
@@ -58,15 +59,20 @@ class WsClient:
                 print('executed ' , task['path'])
     
     def __onClose(self,ws,close_status_code,close_msg):
-        print("closed")
+        print("closed, reconnecting in 10 second")
+        time.sleep(10) # reconnect in 10 second
         self.run()
         
     def __onError(self,ws,error):
-        print('web socket error',error)
-        if(isinstance(error,AttributeError) and 'errno' in error and error.errno == 111):
+        print('web socket error',type(error),error,ws)
+        if isinstance(error,ConnectionRefusedError):
             print(error.errno)   
             self.__isReady = True
             self.__connected - False
+            print("Refused, reconnecting in 10 second")
+            time.sleep(10) # reconnect in 10 second
+            self.run()
+            
         
     #send message in string to the server'
     def send(self, message): 
@@ -81,8 +87,8 @@ class WsClient:
     def clearListener(self,key):
         self.__listeners.pop(key)
     
-    def run(self):
-        threading.Thread(target=self.__ws.run_forever).start()
+    def run(self): 
+        threading.Thread(target=self.__ws.run_forever,kwargs={'reconnect':10}).start() 
         
     def isReady(self):
         return self.__isReady

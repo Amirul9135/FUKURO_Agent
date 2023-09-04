@@ -54,7 +54,7 @@ class DiskReading:
     
     @staticmethod
     def getSectorSize(disks):
-        command = ["lsblk","-l", "-o", "NAME,PHY-SEC"]
+        command = ["lsblk","-b","-l", "-o", "NAME,PHY-SEC"]
         result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         if result.returncode == 0:
             output_lines = result.stdout.strip().split('\n') 

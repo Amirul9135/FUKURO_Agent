@@ -41,15 +41,24 @@ class MonitoringController:
         #for disk list
         self.__disk = {}
         
+        #upload specs
+         
+        self.__wsc.send(json.dumps({ 
+            'path': 'post/spec/cpu',
+            'data': NodeSpecification.cpu_spec()
+            }).replace('_',' '))
+        self.__wsc.send(json.dumps({ 
+            'path': 'post/spec/ip',
+            'data': NodeSpecification.ip_address()
+            }).replace('_',' '))
+        #upload speccs end
+        
+        self.__refreshDiskSpec()
+        self.__wsc.addListener("refresh/disk", self.__refreshDiskSpec)
         
         #bind web socket listeners'
         self.__wsc.addListener("interval/push", self.updatePushInterval)
-        self.__wsc.addListener("toggle/push", self.toggleIntervalMonitoring)  
-        disk = NodeSpecification.diskList()
-        self.__wsc.send(json.dumps({ 
-            'path': 'post/spec/disk',
-            'data':disk
-            }).replace('_',' '))
+        self.__wsc.addListener("toggle/push", self.toggleIntervalMonitoring)   
         self.setup() 
         print("Starting monitoring")
     def stopAll(self):
@@ -159,5 +168,11 @@ class MonitoringController:
         
             end_time = time.time()
                 
-            
+    def __refreshDiskSpec(self):
+        disk = NodeSpecification.diskList()
+        self.__wsc.send(json.dumps({ 
+            'path': 'post/spec/disk',
+            'data':disk
+            }).replace('_',' '))
+        
             

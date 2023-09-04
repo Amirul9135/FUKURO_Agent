@@ -15,10 +15,10 @@ class DiskOverseer(IntervalMetricOverseer):
         wsc.addListener("toggle/dsk", lambda val: self.start() if val else self.stop())
         wsc.addListener("spec/disk", self.__updateDisklist) 
         self.__disk = diskList
-        DiskReading.getSectorSize(self.__disk)
+        DiskReading.getSectorSize(self.__disk) 
  
     def _metricExtraction(self): 
-        #Extract 2 reading at 1 sec interval timepoint' 
+        #Extract 2 reading at 1 sec interval timepoint'  
         reading1 = copy.deepcopy(self.__disk )
         reading2 = copy.deepcopy(self.__disk ) 
         start_time,_ = DiskReading.readCurrentProc(reading1) 
@@ -34,7 +34,7 @@ class DiskOverseer(IntervalMetricOverseer):
          
     def __updateDisklist(self,val):
         ''
-        self.__disk = {}
+        self.__disk.clear()
         for name in val:
             self.__disk[name] = DiskReading.diskStruct()
         DiskReading.getSectorSize(self.__disk)

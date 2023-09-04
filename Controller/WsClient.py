@@ -27,8 +27,7 @@ class WsClient:
 
     
     def __onMessage(self,ws,message):
-        print("received ")
-        print(message)
+        print("received ",message) 
         #parse the message to identify task or multiple task
         try:
             parsed = json.loads(message)

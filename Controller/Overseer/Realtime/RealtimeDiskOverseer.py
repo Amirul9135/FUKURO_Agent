@@ -11,11 +11,11 @@ class RealtimeDiskOverseer(RealtimeMetricOverseer):
         super().__init__(wsc, payload,interval,threshold,thresholdTick,alertCooldown) 
         wsc.addListener("interval/realtime/dsk", self.updateInterval)  
         wsc.addListener("toggle/realtime/dsk", lambda val: self.start() if val else self.stop())
-        self.__disk = diskList
+        self.__disk = diskList 
         
     
     def _metricExtraction(self): 
-        #Extract 2 reading at 1 sec interval timepoint' 
+        #Extract 2 reading at 1 sec interval timepoint'  
         reading1 = copy.deepcopy(self.__disk )
         reading2 = copy.deepcopy(self.__disk ) 
         start_time,_ = DiskReading.readCurrentProc(reading1) 

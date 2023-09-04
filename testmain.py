@@ -1,4 +1,5 @@
 from Controller.MonitoringController import MonitoringController
+from Controller.CommandExecutor import CommandExecutor
 from Controller.WsClient import WsClient  
 import time
 
@@ -25,6 +26,7 @@ def main():
     else:
         print("connected")
         cont = MonitoringController(ws)
+        ext = CommandExecutor(ws)
 
 #main()
 test =  MEMReading()

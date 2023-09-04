@@ -38,6 +38,10 @@ class MonitoringController:
         self.__lock:threading.Lock = threading.Lock()
         self.__isPushing:bool = False
         
+        #for disk list
+        self.__disk = {}
+        
+        
         #bind web socket listeners'
         self.__wsc.addListener("interval/push", self.updatePushInterval)
         self.__wsc.addListener("toggle/push", self.toggleIntervalMonitoring)  
@@ -57,9 +61,8 @@ class MonitoringController:
         self.__intervalOverseer['mem'] = MEMOverseer(self.__wsc,self.__payload)
         self.__realtimeOverseer['mem'] = RealtimeMEMOverseer(self.__wsc,self.__payload) 
         
-        disk = {}
-        self.__intervalOverseer['dsk'] = DiskOverseer(self.__wsc,self.__payload,disk)
-        self.__realtimeOverseer['dsk'] = RealtimeDiskOverseer(self.__wsc,self.__payload,disk) 
+        self.__intervalOverseer['dsk'] = DiskOverseer(self.__wsc,self.__payload,self.__disk)
+        self.__realtimeOverseer['dsk'] = RealtimeDiskOverseer(self.__wsc,self.__payload,self.__disk) 
         
         self.__intervalOverseer['net'] = NETOverseer(self.__wsc,self.__payload)
         self.__realtimeOverseer['net'] = RealtimeNETOverseer(self.__wsc,self.__payload) 

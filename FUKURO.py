@@ -130,12 +130,13 @@ def cli():
         if not all([args.passkey]):
             parser.error("When stopping, passkey are required")
         # Stop the daemon
-        print("Stopping daemon")  
+        print("Stopping FUKURO Monitoring")  
         try:
             ''
             with open("/var/run/FUKURO_Agent.pid", "r") as pid_file:
                 pid = int(pid_file.read())
                 os.kill(pid, signal.SIGTERM)
+                print("FUKURO Monitoring stopped")  
         except Exception as e:
             print(e)
     elif action == "stat":

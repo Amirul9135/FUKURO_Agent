@@ -1,7 +1,6 @@
 from datetime import datetime
 import subprocess
-import time
-import copy
+import time 
 
 
 class DiskReading: 

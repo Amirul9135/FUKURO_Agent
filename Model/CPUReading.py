@@ -1,4 +1,5 @@
-from datetime import datetime  
+from datetime import datetime
+import subprocess  
 
 class CPUReading:
     def __init__(self,reading1,reading2,timeStamp): 
@@ -49,6 +50,31 @@ class CPUReading:
         return 
     
     @staticmethod
+    def topUsage(limit):
+        ''
+        ps = []
+        limit = limit + 1
+        command = "ps -aux --sort -cpu | head -" + str(limit)
+        output = subprocess.check_output(command, shell=True, universal_newlines=True)
+        lines = output.split('\n')
+        first = True
+        for line in lines:
+            if first:
+                first = False
+            else:
+                part = line.split() 
+                if(len(part)> 10): 
+                    ps.append({
+                        "user":part[0],
+                        "pid":part[1],
+                        "usage":part[2],
+                        "command":part[10]
+                    })
+        return ps
+ 
+        
+    
+    @staticmethod
     def metricLabel():
         return "cpu"
      
@@ -66,5 +92,4 @@ class CPUReading:
     
     def getUsage(self):
         return self.__total
-        
-    
+         

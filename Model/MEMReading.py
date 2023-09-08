@@ -1,4 +1,5 @@
 from datetime import datetime
+import subprocess
 
 class MEMReading: 
     def __init__(self): 
@@ -46,3 +47,27 @@ class MEMReading:
     @staticmethod
     def metricLabel():
         return "mem"
+    
+    @staticmethod
+    def topUsage(limit):
+        ''
+        ps = []
+        limit = limit + 1
+        command = "ps -aux --sort -pmem | head -" + str(limit)
+        output = subprocess.check_output(command, shell=True, universal_newlines=True)
+        lines = output.split('\n')
+        first = True
+        for line in lines:
+            if first:
+                first = False
+            else:
+                part = line.split() 
+                if(len(part)> 10): 
+                    ps.append({
+                        "user":part[0],
+                        "pid":part[1],
+                        "usage":part[3],
+                        "command":part[10]
+                    })
+        return ps
+     

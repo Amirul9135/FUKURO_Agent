@@ -32,10 +32,15 @@ class IntervalMetricOverseer(MetricOverseer):
             self.__payloadRef[key].append(reading)  
         
     def _triggerAlert(self,value,label:str,reading:dict):
-        self.__threshold.evaluate(value,{
-                    "path":"alert/" + label,
-                    "data": reading
-                }) 
+        
+        try:
+            
+            self.__threshold.evaluate(value,{
+                        "path":"alert/" + label,
+                        "data": reading
+                    }) 
+        except Exception as e:
+            print('trigger alert failed',e)
     def stop(self):
         self.__threshold.stopAll()
         super().stop()

@@ -36,7 +36,8 @@ class CPUReading:
             "dateTime": self.__timeStamp,  
             "system": self.__usageOnSys,
             "user": self.__usageOnUser,
-            "interrupt": self.__usageOnInterrupt 
+            "interrupt": self.__usageOnInterrupt, 
+            "total": self.__total
         } 
         
     

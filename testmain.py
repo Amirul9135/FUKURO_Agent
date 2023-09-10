@@ -15,7 +15,7 @@ def main():
     ws = WsClient(liveIp,{
         "nodeId":1,
         "passKey":"asd123",
-        "jwt":"eyJ1c2VyIjp7ImlkIjoxLCJuYW1lIjoiYW1pcnVsIGFzcmFmIiwidXNlcm5hbWUiOiJhYTExMjMifSwiaWF0IjoxNjk0MjUzODY2fQ.q90Sf76GvZOoDZG5pD3tMqLjamjDm8WYbin0K9LDwUc",
+        "jwt":"eyJ1c2VyIjp7ImlkIjoxLCJuYW1lIjoiYW1pcnVsIGFzcmFmIiwidXNlcm5hbWUiOiJhYTExMjMifSwiaWF0IjoxNjk0MzQ0NDY0fQ.y71ZljP0WApsYjo-7tZSPtUZcYPs6pOB2vVyI2pZ_hI",
         "uid":1
     })
     ws.run()

@@ -15,7 +15,7 @@ class FUKURO:
     
     @staticmethod
     def IP():
-        return '192.168.8.102:5000'
+        return '139.59.233.99:5001' #'192.168.8.102:5000'
     
     def __init__(self, username, password, passkey, nodeId):
         self.ws = None

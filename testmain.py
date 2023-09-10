@@ -9,8 +9,10 @@ from Model.MEMReading import MEMReading
 
 def main():
     print("start")
+    localIp = "ws://192.168.8.102:5000"
+    liveIp = "ws://139.59.233.99:5001"
 
-    ws = WsClient("ws://192.168.8.102:5000",{
+    ws = WsClient(liveIp,{
         "nodeId":1,
         "passKey":"asd123",
         "jwt":"eyJ1c2VyIjp7ImlkIjoxLCJuYW1lIjoiYW1pcnVsIGFzcmFmIiwidXNlcm5hbWUiOiJhYTExMjMifSwiaWF0IjoxNjk0MjUzODY2fQ.q90Sf76GvZOoDZG5pD3tMqLjamjDm8WYbin0K9LDwUc",

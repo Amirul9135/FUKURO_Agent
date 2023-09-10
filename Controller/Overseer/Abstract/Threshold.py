@@ -19,8 +19,7 @@ class Threshold:
         tmpReached = []
         for threshold in reached: 
             if self.__checkTick(threshold):
-                tmpReached.append(threshold)
-        print("evaluated3", tmpReached) 
+                tmpReached.append(threshold) 
         if len(tmpReached)> 0 :
             print("alert",value,threshold,payload)       
             payload = re.sub(r"\s+|\n","",json.dumps(payload))

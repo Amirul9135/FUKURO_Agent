@@ -1,3 +1,5 @@
+from datetime import datetime
+import requests
 from Controller.MonitoringController import MonitoringController
 from Controller.CommandExecutor import CommandExecutor
 from Controller.WsClient import WsClient  
@@ -30,9 +32,13 @@ def main():
         cont = MonitoringController(ws)
         ext = CommandExecutor(ws)
 
-#main()
-test =  MEMReading()
-print(test.toJSON())
+def dateTest():
+    requests.get('http://139.59.233.99:5001/',json= {
+                    "string" : datetime.now().strftime("%Y-%m-%d_%H:%M:%S"),
+                    "dt" : datetime.now().isoformat()
+                },headers={
+                    "Content-Type": "application/json"
+                })
+ 
 
-main()
-
+dateTest()

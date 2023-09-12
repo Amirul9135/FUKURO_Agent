@@ -1,6 +1,8 @@
 from datetime import datetime
 import subprocess
-import time 
+import time
+
+import pytz 
 
 
 class DiskReading: 
@@ -11,7 +13,7 @@ class DiskReading:
     # interval should be milisecond interval between first and second reading
     def __init__(self,reading1,reading2,sector,interval,timeStamp): 
         
-        self.__timeStamp = timeStamp.strftime("%Y-%m-%d_%H:%M:%S")
+        self.__timeStamp = datetime.isoformat(timeStamp)
          
         self.__usage = round((reading2[10] - reading1[10])/interval * 100,2)
         if self.__usage > 100:
@@ -41,7 +43,7 @@ class DiskReading:
     def readCurrentProc(disks): 
         with open('/proc/diskstats', 'r') as stat_file:
             timepoint = time.perf_counter()
-            timestamp = datetime.now()
+            timestamp = datetime.now(pytz.utc)
             for line in stat_file:
                 part = line.split()
                 name = part[2]

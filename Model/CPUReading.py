@@ -1,10 +1,12 @@
 from datetime import datetime
-import subprocess  
+import subprocess
+
+import pytz  
 
 class CPUReading:
     def __init__(self,reading1,reading2,timeStamp): 
         
-        self.__timeStamp = timeStamp.strftime("%Y-%m-%d_%H:%M:%S")
+        self.__timeStamp =  datetime.isoformat(timeStamp)
         
         #split the reading line into fields skip 1st field since its a name
         #by index field will contain
@@ -43,8 +45,8 @@ class CPUReading:
     
     @staticmethod
     def readCurrentProc(): 
-        with open('/proc/stat', 'r') as stat_file:
-            timestamp = datetime.now()
+        with open('/proc/stat', 'r') as stat_file: 
+            timestamp = datetime.now(pytz.utc)
             for line in stat_file:
                 if line.startswith('cpu') and not line[3].isdigit(): #exclude that have digit to only extract total of all core 
                     return line,timestamp

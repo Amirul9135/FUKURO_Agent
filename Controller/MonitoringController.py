@@ -46,11 +46,11 @@ class MonitoringController:
         self.__wsc.send(json.dumps({ 
             'path': 'post/spec/cpu',
             'data': NodeSpecification.cpu_spec()
-            }).replace('_',' '))
+            }))
         self.__wsc.send(json.dumps({ 
             'path': 'post/spec/ip',
             'data': NodeSpecification.ip_address()
-            }).replace('_',' '))
+            }))
         #upload speccs end
         
         self.__refreshDiskSpec()
@@ -86,10 +86,10 @@ class MonitoringController:
         #request configs from server db and start/stop/initialize only necessaries'
         self.__wsc.send(json.dumps({
                 "path":"config"
-            }).replace('_',' '))
+            }))
         self.__wsc.send(json.dumps({ 
             'path': 'get/spec/disk' 
-            }).replace('_',' '))
+            }))
     
     #true will start/restart, false wil stop'
     def toggleIntervalMonitoring(self,run:bool):  
@@ -158,8 +158,7 @@ class MonitoringController:
                     "data": self.__payload.copy()  
                 } 
             #minify payload
-            payload = re.sub(r"\s+|\n","",json.dumps(payload))
-            payload = payload.replace('_',' ')  
+            payload = re.sub(r"\s+|\n","",json.dumps(payload)) 
             try:
                 self.__wsc.send(payload)
                 with self.__lock: 
@@ -174,6 +173,6 @@ class MonitoringController:
         self.__wsc.send(json.dumps({ 
             'path': 'post/spec/disk',
             'data':disk
-            }).replace('_',' '))
+            }))
         
             

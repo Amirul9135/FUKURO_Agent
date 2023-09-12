@@ -22,6 +22,6 @@ class RealtimeMetricOverseer(MetricOverseer):
             "data": reading
         }
         try:
-            self._sendMessage(json.dumps(payload).replace('_',' '))
+            self._sendMessage(json.dumps(payload))
         except Exception as e:
             print('realtime failed',e)

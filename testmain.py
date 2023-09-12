@@ -1,9 +1,12 @@
 from datetime import datetime
+import json
+import re
 import requests
 from Controller.MonitoringController import MonitoringController
 from Controller.CommandExecutor import CommandExecutor
 from Controller.WsClient import WsClient  
 import time 
+import pytz
 
 ##
 from Model.MEMReading import MEMReading
@@ -17,8 +20,8 @@ def main():
     ws = WsClient(liveIp,{
         "nodeId":1,
         "passKey":"asd123",
-        "jwt":"eyJ1c2VyIjp7ImlkIjoxLCJuYW1lIjoiYW1pcnVsIGFzcmFmIiwidXNlcm5hbWUiOiJhYTExMjMifSwiaWF0IjoxNjk0MzQ0NDY0fQ.y71ZljP0WApsYjo-7tZSPtUZcYPs6pOB2vVyI2pZ_hI",
-        "uid":1
+        "jwt":"eyJ1c2VyIjp7ImlkIjoyMCwibmFtZSI6Ik11aGFtbWFkIEFtaXJ1bCBBc3JhZiBiaW4gTXVzdGFmYSAiLCJ1c2VybmFtZSI6ImFtaXJ1bDk5In0sImlhdCI6MTY5NDQ5MDA5M30.pnQFfAAdVKm4AOVWkXYtn7n2Pr-IqjxRlUvEyU44gSA",
+        "uid":20
     })
     ws.run()
     print("connecting")
@@ -33,12 +36,17 @@ def main():
         ext = CommandExecutor(ws)
 
 def dateTest():
-    requests.get('http://139.59.233.99:5001/',json= {
+    requests.get('http://192.168.8.102:5000/',json= {
                     "string" : datetime.now().strftime("%Y-%m-%d_%H:%M:%S"),
-                    "dt" : datetime.now().isoformat()
+                    "dt" : datetime.isoformat(datetime.now(pytz.utc))
                 },headers={
                     "Content-Type": "application/json"
                 })
- 
+  
+print(datetime.isoformat(datetime.now(pytz.utc))) 
 
-dateTest()
+payload = {"string":"strsomething asd dsequdsa","dt":datetime.isoformat(datetime.now(pytz.utc)),"num":12030.2}
+print(payload)
+payload = re.sub(r"\s+|\n","",json.dumps(payload)) 
+print(payload)
+main()

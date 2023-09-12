@@ -22,8 +22,7 @@ class Threshold:
                 tmpReached.append(threshold) 
         if len(tmpReached)> 0 :
             print("alert",value,threshold,payload)       
-            payload = re.sub(r"\s+|\n","",json.dumps(payload))
-            payload = payload.replace('_',' ')  
+            payload = re.sub(r"\s+|\n","",json.dumps(payload)) 
             try:
                 self.__send(payload) 
                 for th in tmpReached:

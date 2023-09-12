@@ -1,6 +1,8 @@
 from datetime import datetime
 import subprocess
 
+import pytz
+
 class MEMReading: 
     def __init__(self): 
         values = {
@@ -10,7 +12,7 @@ class MEMReading:
             "Cached":0,
             "SReclaimable":0
         }
-        self.__timeStamp = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+        self.__timeStamp = datetime.isoformat(datetime.now(pytz.utc))
         with open('/proc/meminfo', 'r') as meminfo_file:
             for line in meminfo_file:
                 parts = line.split(':')

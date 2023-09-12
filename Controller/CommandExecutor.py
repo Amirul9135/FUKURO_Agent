@@ -111,4 +111,4 @@ class CommandExecutor:
         self.__send_response(response_data)
     
     def __send_response(self, response_data): 
-        self.__wsc.send(json.dumps(response_data).replace('_', ' '))
+        self.__wsc.send(json.dumps(response_data))

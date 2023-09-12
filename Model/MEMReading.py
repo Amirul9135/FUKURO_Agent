@@ -72,4 +72,5 @@ class MEMReading:
                         "command":part[10]
                     })
         return ps
-     
+
+ 

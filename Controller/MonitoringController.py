@@ -51,6 +51,10 @@ class MonitoringController:
             'path': 'post/spec/ip',
             'data': NodeSpecification.ip_address()
             }))
+        self.__wsc.send(json.dumps({ 
+            'path': 'post/spec/mem',
+            'data': NodeSpecification.memTotal()
+            }))
         #upload speccs end
         
         self.__refreshDiskSpec()

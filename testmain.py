@@ -17,11 +17,11 @@ def main():
     localIp = "ws://192.168.8.102:5000"
     liveIp = "ws://139.59.233.99:5001"
 
-    ws = WsClient(liveIp,{
-        "nodeId":1,
-        "passKey":"asd123",
-        "jwt":"eyJ1c2VyIjp7ImlkIjoyMCwibmFtZSI6Ik11aGFtbWFkIEFtaXJ1bCBBc3JhZiBiaW4gTXVzdGFmYSAiLCJ1c2VybmFtZSI6ImFtaXJ1bDk5In0sImlhdCI6MTY5NDQ5MDA5M30.pnQFfAAdVKm4AOVWkXYtn7n2Pr-IqjxRlUvEyU44gSA",
-        "uid":20
+    ws = WsClient(localIp,{
+        "nodeId":2,
+        "passKey":"qwe123",
+        "jwt":"eyJ1c2VyIjp7ImlkIjoyLCJuYW1lIjoiYW1pcnVsIiwidXNlcm5hbWUiOiJhbWlydWw5OSJ9LCJpYXQiOjE2OTQ2NzQ1MjV9.qlOLUIQcdgvlGrii2dZMxx67rFvcYVqPjeiPTrctEfA",
+        "uid":2
     })
     ws.run()
     print("connecting")
@@ -42,11 +42,5 @@ def dateTest():
                 },headers={
                     "Content-Type": "application/json"
                 })
-  
-print(datetime.isoformat(datetime.now(pytz.utc))) 
-
-payload = {"string":"strsomething asd dsequdsa","dt":datetime.isoformat(datetime.now(pytz.utc)),"num":12030.2}
-print(payload)
-payload = re.sub(r"\s+|\n","",json.dumps(payload)) 
-print(payload)
+   
 main()

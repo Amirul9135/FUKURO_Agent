@@ -24,7 +24,16 @@ class NodeSpecification:
                 spec['freq'] = part[1].strip()
         return spec
         
-        
+    @staticmethod
+    def memTotal():
+         with open('/proc/meminfo', 'r') as meminfo_file:
+            for line in meminfo_file:
+                parts = line.split(':')
+                if len(parts) == 2:
+                    key = parts[0].strip()
+                    if(key == "MemTotal"):
+                        return parts[1].strip()
+    
     @staticmethod
     def ip_address():
         ip = os.popen("hostname -I").read()
@@ -52,4 +61,5 @@ class NodeSpecification:
                     if key2.startswith(key) and key2 != key:
                         diskNames[key]['used'] += diskNames[key2]['used']
         return diskNames
-     
+
+ 

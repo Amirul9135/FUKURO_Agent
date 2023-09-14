@@ -24,8 +24,7 @@ class MEMReading:
                             value = int(value_str.split()[0])
                         except ValueError:
                             value = value_str
-                        values[key] = value
-        self.__total:int  = values["MemTotal"]
+                        values[key] = value 
         
         #% of memory used for something includeing buffer and cache
         self.__used:float = round( (values["MemTotal"] - values["MemFree"] ) / values["MemTotal"] * 100,2)
@@ -37,8 +36,7 @@ class MEMReading:
     
     def toJSON(self):
         return{
-            "dateTime": self.__timeStamp,
-            "total": self.__total,
+            "dateTime": self.__timeStamp, 
             "used": self.__used,
             "cached": self.__cached,
             "buffer": self.__buffer

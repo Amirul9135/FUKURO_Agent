@@ -15,7 +15,7 @@ class FUKURO:
     
     @staticmethod
     def IP():
-        return '139.59.233.99:5001' #'192.168.8.102:5000'
+        return  '192.168.8.102:5000' #'139.59.233.99:5001'
     
     def __init__(self, username, password, passkey, nodeId):
         self.ws = None
@@ -63,7 +63,7 @@ class FUKURO:
                     print(f"Error: {str(e)}")
                 
             else:
-                print('failed to start, user does not have access')
+                print('failed to start, invalid credential')
                 
         else:
             print('failed to start, invalid user credential')
@@ -108,7 +108,8 @@ def cli():
     parser.add_argument("nodeId",nargs="?",  type=int, help="Node ID")
     parser.add_argument("username",nargs="?",  help="Username")
     parser.add_argument("password",nargs="?",  help="Password") 
-
+    if os.geteuid() != 0:
+        parser.error("FUKURO requires super user/admin privilege to operates") 
     args = parser.parse_args()
 
     # Access the values of the positional arguments
@@ -118,7 +119,10 @@ def cli():
     if action == "start":
         # Start the daemon with the provided credentials
         if not all([args.username, args.password, args.passkey, args.nodeId]):
-            parser.error("When starting, all of --username, --password, --passkey, and --nodeId are required.")
+            parser.error('please provide \n1: action \n2: passKey \n3: nodeId \n4: username \n5: password\n\n '
+              '\nin correct order.\naction[1]: start or stop\nusername[4] and password[5] is your user personal credential'
+              '\nnodeId[3] and passKey[2] can be obtained after registering new node via the mobile app')
+        
         
         try: 
             with open("/var/run/FUKURO_Agent.pid", "r") as pid_file:
@@ -136,9 +140,7 @@ def cli():
                 print('Failed to start monitoring',e)
         except Exception as e: 
             print(e)
-    elif action == "stop":
-        if not all([args.passkey]):
-            parser.error("When stopping, passkey are required")
+    elif action == "stop": 
         # Stop the daemon
         print("Stopping FUKURO Monitoring")  
         try:
@@ -151,6 +153,7 @@ def cli():
             print("PID doesn't exist, Monitoring is not running")
         except Exception as e: 
             print(e)
+            
     elif action == "stat": 
         pid_file = "/var/run/FUKURO_Agent.pid" 
         if os.path.exists(pid_file):
@@ -168,9 +171,9 @@ if __name__ == "__main__":
         cli()
     else:
         print('no argument')
-        print('please provide \naction passKey nodeId username password '
-              '\nin correct order.\naction: start or stop\nusername and password is your personal credential'
-              '\nnodeId and passKey can be obtained after registering new node via the mobile app'
+        print('please provide \n1: action \n2: passKey \n3: nodeId \n4: username \n5: password\n\n '
+              '\nin correct order.\naction[1]: start or stop\nusername[4] and password[5] is your user personal credential'
+              '\nnodeId[3] and passKey[2] can be obtained after registering new node via the mobile app'
               )
         # If no arguments are provided, run the daemonized application
         #MyDaemonizedApp(None, None, None, None).start()

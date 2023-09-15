@@ -20,7 +20,7 @@ def main():
     ws = WsClient(localIp,{
         "nodeId":2,
         "passKey":"qwe123",
-        "jwt":"eyJ1c2VyIjp7ImlkIjoyLCJuYW1lIjoiYW1pcnVsIiwidXNlcm5hbWUiOiJhbWlydWw5OSJ9LCJpYXQiOjE2OTQ2NzQ1MjV9.qlOLUIQcdgvlGrii2dZMxx67rFvcYVqPjeiPTrctEfA",
+        "jwt":"eyJ1c2VyIjp7ImlkIjoyLCJuYW1lIjoiYW1pcnVsIiwidXNlcm5hbWUiOiJhbWlydWw5OSJ9LCJpYXQiOjE2OTQ3MDY5MzJ9.9LP0HEvqhBFEpuTpDL0murGbrccJN2hgAAYrxEtNwAo",
         "uid":2
     })
     ws.run()
